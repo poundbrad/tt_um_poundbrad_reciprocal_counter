@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2024 Tiny Tapeout
+# SPDX-FileCopyrightText: © 2026 Brad Pound
 # SPDX-License-Identifier: Apache-2.0
 
 import cocotb
@@ -8,33 +8,44 @@ from cocotb.triggers import ClockCycles
 
 @cocotb.test()
 async def test_project(dut):
-    dut._log.info("Start")
+    """Verify the temporary Tiny Tapeout placeholder wrapper."""
 
-    # Set the clock period to 10 us (100 KHz)
-    clock = Clock(dut.clk, 10, unit="us")
+    dut._log.info("Starting placeholder wrapper test")
+
+    clock = Clock(dut.clk, 10, units="us")
     cocotb.start_soon(clock.start())
 
-    # Reset
-    dut._log.info("Reset")
+    # Initial input values
     dut.ena.value = 1
     dut.ui_in.value = 0
     dut.uio_in.value = 0
+
+    # Apply reset
     dut.rst_n.value = 0
     await ClockCycles(dut.clk, 10)
     dut.rst_n.value = 1
-
-    dut._log.info("Test project behavior")
-
-    # Set the input values you want to test
-    dut.ui_in.value = 20
-    dut.uio_in.value = 30
-
-    # Wait for one clock cycle to see the output values
     await ClockCycles(dut.clk, 1)
 
-    # The following assersion is just an example of how to check the output values.
-    # Change it to match the actual expected output of your module:
-    assert dut.uo_out.value == 50
+    # The temporary wrapper must drive all outputs low.
+    test_inputs = [
+        (0x00, 0x00),
+        (0x14, 0x1E),
+        (0x55, 0xAA),
+        (0xFF, 0xFF),
+    ]
 
-    # Keep testing the module by changing the input values, waiting for
-    # one or more clock cycles, and asserting the expected output values.
+    for ui_value, uio_value in test_inputs:
+        dut.ui_in.value = ui_value
+        dut.uio_in.value = uio_value
+
+        await ClockCycles(dut.clk, 1)
+
+        expected = (ui_value + uio_value) & 0xFF
+
+        assert int(dut.uo_out.value) == expected, (
+            f"uo_out was {dut.uo_out.value}, expected {expected}"
+        )
+        assert int(dut.uio_out.value) == 0
+        assert int(dut.uio_oe.value) == 0
+
+    dut._log.info("Placeholder wrapper test passed")
