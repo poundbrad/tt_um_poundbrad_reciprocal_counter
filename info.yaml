@@ -16,6 +16,10 @@ project:
   # Source files must be in ./src.
   source_files:
     - "tt_um_poundbrad_reciprocal_counter.v"
+    - "reciprocal_counter.v"
+    - "reciprocal_channel.v"
+    - "register_file.v"
+    - "spi_register_interface.v"
 
 # The pinout of your project. Leave unused pins blank.
 pinout:
