@@ -1,49 +1,78 @@
 `default_nettype none
 `timescale 1ns / 1ps
 
-/* This testbench just instantiates the module and makes some convenient wires
-   that can be driven / tested by the cocotb test.py.
-*/
+/*
+ * RTL testbench for the Tiny Tapeout wrapper.
+ *
+ * Scalar signals are provided for cocotb convenience, but every functional
+ * input still passes through the actual Tiny Tapeout ui_in pin mapping.
+ */
 module tb ();
 
-  // Dump the signals to a FST file. You can view it with gtkwave or surfer.
   initial begin
     $dumpfile("tb.fst");
     $dumpvars(0, tb);
     #1;
   end
 
-  // Wire up the inputs and outputs:
   reg clk;
   reg rst_n;
   reg ena;
-  reg [7:0] ui_in;
   reg [7:0] uio_in;
+
+  // Convenient scalar stimulus signals for cocotb.
+  reg ch0_signal_in;
+  reg ch1_signal_in;
+  reg spi_sclk;
+  reg spi_mosi;
+  reg spi_cs_n;
+
+  /*
+   * Tiny Tapeout dedicated-input mapping:
+   *
+   * ui_in[0] = CH0 pressure oscillator
+   * ui_in[1] = CH1 temperature oscillator
+   * ui_in[2] = SPI SCLK
+   * ui_in[3] = SPI MOSI
+   * ui_in[4] = SPI CS_N
+   * ui_in[7:5] unused
+   */
+  wire [7:0] ui_in = {
+    3'b000,
+    spi_cs_n,
+    spi_mosi,
+    spi_sclk,
+    ch1_signal_in,
+    ch0_signal_in
+  };
+
   wire [7:0] uo_out;
   wire [7:0] uio_out;
   wire [7:0] uio_oe;
+
+  // Tiny Tapeout dedicated-output mapping.
+  wire spi_miso = uo_out[0];
+
 `ifdef GL_TEST
   wire VPWR = 1'b1;
   wire VGND = 1'b0;
 `endif
 
-  // Replace tt_um_poundbrad_reciprocal_counter with your module name:
   tt_um_poundbrad_reciprocal_counter user_project (
-
-      // Include power ports for the Gate Level test:
 `ifdef GL_TEST
-      .VPWR(VPWR),
-      .VGND(VGND),
+      .VPWR   (VPWR),
+      .VGND   (VGND),
 `endif
-
-      .ui_in  (ui_in),    // Dedicated inputs
-      .uo_out (uo_out),   // Dedicated outputs
-      .uio_in (uio_in),   // IOs: Input path
-      .uio_out(uio_out),  // IOs: Output path
-      .uio_oe (uio_oe),   // IOs: Enable path (active high: 0=input, 1=output)
-      .ena    (ena),      // enable - goes high when design is selected
-      .clk    (clk),      // clock
-      .rst_n  (rst_n)     // not reset
+      .ui_in  (ui_in),
+      .uo_out (uo_out),
+      .uio_in (uio_in),
+      .uio_out(uio_out),
+      .uio_oe (uio_oe),
+      .ena    (ena),
+      .clk    (clk),
+      .rst_n  (rst_n)
   );
 
 endmodule
+
+`default_nettype wire
