@@ -7,6 +7,15 @@
  * The external SPI register bus remains 32 bits wide. Configuration and
  * reciprocal-result storage use only the supported internal widths and are
  * zero-extended when read through SPI.
+ *
+ * Configuration stability policy:
+ *   - Nonzero gate-cycle writes are accepted only while the channel is idle.
+ *   - A gate-cycle write of zero is always accepted and aborts/disables the
+ *     channel.
+ *   - Timeout-reference writes are accepted only while the channel is idle.
+ *
+ * This policy allows reciprocal_channel to use the configuration registers
+ * directly without maintaining a second active copy of each value.
  */
 
 `default_nettype none
@@ -95,19 +104,32 @@ module register_file (
             if (reg_write) begin
                 case (reg_addr)
                     ADDR_CH0_GATE_CYCLES: begin
-                        ch0_gate_cycles <= reg_wdata[17:0];
+                        /*
+                         * A zero write is always allowed so software can
+                         * abort/disable an active channel. Nonzero writes are
+                         * ignored until software retries while the channel is idle.
+                         */
+                        if (!ch0_active || (reg_wdata[17:0] == 18'd0)) begin
+                            ch0_gate_cycles <= reg_wdata[17:0];
+                        end
                     end
 
                     ADDR_CH1_GATE_CYCLES: begin
-                        ch1_gate_cycles <= reg_wdata[17:0];
+                        if (!ch1_active || (reg_wdata[17:0] == 18'd0)) begin
+                            ch1_gate_cycles <= reg_wdata[17:0];
+                        end
                     end
 
                     ADDR_CH0_TIMEOUT_REFCOUNT: begin
-                        ch0_timeout_refcount <= reg_wdata[27:0];
+                        if (!ch0_active) begin
+                            ch0_timeout_refcount <= reg_wdata[27:0];
+                        end
                     end
 
                     ADDR_CH1_TIMEOUT_REFCOUNT: begin
-                        ch1_timeout_refcount <= reg_wdata[27:0];
+                        if (!ch1_active) begin
+                            ch1_timeout_refcount <= reg_wdata[27:0];
+                        end
                     end
 
                     ADDR_STATUS: begin
