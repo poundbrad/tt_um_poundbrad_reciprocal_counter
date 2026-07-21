@@ -1,0 +1,9 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1784559217" />
+    <testcase name="test_spi_configuration_register_connections" classname="test_reciprocal_counter" file="/home/runner/work/tt_um_poundbrad_reciprocal_counter/tt_um_poundbrad_reciprocal_counter/test/test_reciprocal_counter.py" lineno="393" time="0.8958873748779297" sim_time_ns="2742331.001" ratio_time="3061022.0412735026" />
+    <testcase name="test_ch0_spi_end_to_end" classname="test_reciprocal_counter" file="/home/runner/work/tt_um_poundbrad_reciprocal_counter/tt_um_poundbrad_reciprocal_counter/test/test_reciprocal_counter.py" lineno="488" time="0.4629192352294922" sim_time_ns="1372486.0009999997" ratio_time="2964849.7978693624" />
+    <testcase name="test_ch1_spi_end_to_end" classname="test_reciprocal_counter" file="/home/runner/work/tt_um_poundbrad_reciprocal_counter/tt_um_poundbrad_reciprocal_counter/test/test_reciprocal_counter.py" lineno="590" time="0.4596402645111084" sim_time_ns="1372486.0009999997" ratio_time="2986000.372399555" />
+    <testcase name="test_dual_channel_spi_operation" classname="test_reciprocal_counter" file="/home/runner/work/tt_um_poundbrad_reciprocal_counter/tt_um_poundbrad_reciprocal_counter/test/test_reciprocal_counter.py" lineno="692" time="0.5372076034545898" sim_time_ns="1568198.0010000002" ratio_time="2919165.683649077" />
+  </testsuite>
+</testsuites>

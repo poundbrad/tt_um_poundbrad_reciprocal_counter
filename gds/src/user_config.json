@@ -1,0 +1,15 @@
+{
+  "DESIGN_NAME": "tt_um_poundbrad_reciprocal_counter",
+  "VERILOG_FILES": [
+    "dir::tt_um_poundbrad_reciprocal_counter.v",
+    "dir::reciprocal_counter.v",
+    "dir::reciprocal_channel.v",
+    "dir::register_file.v",
+    "dir::spi_register_interface.v"
+  ],
+  "DIE_AREA": "0 0 161.00 225.76",
+  "FP_DEF_TEMPLATE": "dir::../tt/tech/sky130A/def/tt_block_1x2_pg.def",
+  "VDD_PIN": "VPWR",
+  "GND_PIN": "VGND",
+  "RT_MAX_LAYER": "met4"
+}
