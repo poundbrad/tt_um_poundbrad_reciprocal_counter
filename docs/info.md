@@ -128,39 +128,39 @@ From the `test` directory:
 
 Before submitting or revising the Tiny Tapeout project, verify:
 
-- Reset behavior
-- SPI write and readback of all four configuration registers
-- Channel 0 measurement
-- Channel 1 measurement
-- Simultaneous two-channel operation
-- Disabling one channel without disturbing the other
-- Measurement counters incrementing
-- Timeout detection and recovery
-- Timeout-counter clearing
-- Sticky timeout clearing
-- Overflow behavior and sticky-overflow clearing
-- Unused outputs are driven to known values
-- `uio_oe` remains zero
+- Reset behavior - DONE
+- SPI write and readback of all four configuration registers - DONE
+- Channel 0 measurement - DONE
+- Channel 1 measurement - DONE
+- Simultaneous two-channel operation - DONE
+- Disabling one channel without disturbing the other - DONE
+- Measurement counters incrementing - DONE
+- Timeout detection and recovery - SIMULATION ONLY
+- Timeout-counter clearing - SIMULATION ONLY
+- Sticky timeout clearing - SIMULATION ONLY
+- Overflow behavior and sticky-overflow clearing - SIMULATION ONLY
+- Unused outputs are driven to known values - DONE
+- `uio_oe` remains zero - DONE
 
-## External hardware validation
+### FPGA hardware validation
 
-The production SPI path should be exercised on the FPGA before the final
-submission revision is frozen.
+The production SPI slave was validated on an iCEBreaker FPGA using a separate
+FPGA SPI master connected through physical jumper wires.
 
-The FPGA test should use an SPI master to drive physical jumper wires connected
-to the FPGA pins running the same `spi_register_interface` slave RTL used in the
-ASIC design:
+Verified configuration:
 
-    PC / UART command console
-        -> FPGA SPI master
-        -> physical jumper wires
-        -> FPGA SPI slave
-        -> register file
-        -> reciprocal counter channels
+- SPI mode 0
+- MSB first
+- 250 kHz test SCLK
+- Command byte `0x00` for write
+- Command byte `0x01` for read
+- 8-bit byte address
+- 32-bit register data
+- Chip select held low for the complete 48-bit transaction
 
-The existing UART debug-register path bypasses the SPI slave and therefore does
-not, by itself, verify SPI clocking, chip-select timing, MOSI sampling, MISO
-shifting, transaction framing, or bit alignment.
+Physical SPI writes and readbacks passed for all configuration registers.
+Both reciprocal-counter channels operated simultaneously through the SPI
+interface without timeout events.
 
 ## Files to preserve with the submitted revision
 
